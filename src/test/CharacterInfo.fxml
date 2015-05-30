@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox id="rootPane" fx:id="rootPane" styleClass="root-pane" prefHeight="600.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="test.controller.CharacterInfoController">
+    <children>
+        <TextFlow  id="applicationKeyFlow" fx:id="applicationKeyFlow" VBox.vgrow="NEVER">
+            <children>    
+                <Text id="applicationKeyLabel" fx:id="applicationKeyLabel" text="%application.key.label" styleClass="main-text" />
+            </children>    
+        </TextFlow>
+        <TextField id="applicationKeyField" fx:id="applicationKeyField" />
+        <TextFlow  id="accountCharacterFlow" fx:id="accountCharacterFlow" VBox.vgrow="NEVER">
+            <children>    
+                <Text id="accountCharacterLabel" fx:id="accountCharacterLabel" text="%account.characters.label" styleClass="main-text" />
+            </children>    
+        </TextFlow>
+    </children>
+</VBox>
