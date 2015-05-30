@@ -20,5 +20,6 @@
                 <Text id="accountCharacterLabel" fx:id="accountCharacterLabel" text="%account.characters.label" styleClass="main-text" />
             </children>    
         </TextFlow>
+        <ListView id="characterList" fx:id="characterList" orientation="HORIZONTAL"  VBox.vgrow="ALWAYS" />
     </children>
 </VBox>

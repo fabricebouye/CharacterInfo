@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -17,11 +18,18 @@ import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+import test.data.account.Account;
 import test.data.character.Character;
+import test.data.guild.Guild;
+import test.query.AccountQuery;
 import test.query.CharactersQuery;
+import test.query.GuildDetailsQuery;
+import test.scene.renderer.CharacterListCell;
 import test.text.ApplicationKeyTextFormatter;
 import test.text.ApplicationKeyUtils;
 
@@ -33,6 +41,10 @@ public final class CharacterInfoController implements Initializable {
 
     @FXML
     private TextField applicationKeyField;
+    @FXML
+    private Text accountCharacterLabel;
+    @FXML
+    private ListView<Character> characterList;
 
     private final Properties settings = new Properties();
 
@@ -59,13 +71,14 @@ public final class CharacterInfoController implements Initializable {
             applicationKeyField.positionCaret(0);
             applicationKeyField.selectRange(0, 0);
         });
+        //
     }
 
     /**
      * La pseudo-classe servant de décorateur en cas d'erreur.
      */
     private final PseudoClass errorPseudoClass = PseudoClass.getPseudoClass("error"); // NOI18N.
-    
+
     /**
      * Invoqué si la valeur de la clé d'application change.
      */
@@ -74,12 +87,18 @@ public final class CharacterInfoController implements Initializable {
         applicationKeyField.pseudoClassStateChanged(errorPseudoClass, !applicationKeyValid);
         if (applicationKeyValid) {
             settings.setProperty("app.key", newValue); // NOI18N.
+            characterList.getItems().clear();
+            account = null;
+            guilds = null;
             start();
         } else {
             stop();
             settings.setProperty("app.key", null); // NOI18N.
         }
     };
+
+    private transient Account account;
+    private transient List<Guild> guilds;
 
     /**
      * Le service de mise à jour automatique.
@@ -104,6 +123,12 @@ public final class CharacterInfoController implements Initializable {
                         @Override
                         protected List<Character> call() throws Exception {
                             final String applicationKey = settings.getProperty("app.key"); // NOI18N.
+                            account = AccountQuery.accountInfo(applicationKey);
+                            guilds = new ArrayList(account.getGuilds().size());
+                            for (final String guildId : account.getGuilds()) {
+                                final Guild guild = GuildDetailsQuery.guildInfo(guildId);
+                                guilds.add(guild);
+                            }
                             final List<String> names = CharactersQuery.listCharacters(applicationKey);
                             return CharactersQuery.characterInfos(applicationKey, names.toArray(new String[0]));
                         }
@@ -113,8 +138,10 @@ public final class CharacterInfoController implements Initializable {
             updateService.setRestartOnFailure(true);
             updateService.setPeriod(updateWaitTime);
             updateService.setOnSucceeded(workerStateEvent -> {
+                accountCharacterLabel.setText(account.getName());
                 final List<Character> result = updateService.getValue();
-                result.forEach(System.out::println);
+                characterList.getItems().setAll(result);
+                characterList.setCellFactory(listView -> new CharacterListCell(guilds));
             });
             updateService.setOnFailed(workerStateEvent -> {
                 System.err.println(updateService.getException());
