@@ -118,4 +118,29 @@ public final class Character {
      */
     Character() {
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Race getRace() {
+        return race;
+    }
+
+    public Profession getProfession() {
+        return profession;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public String getGuild() {
+        return guild;
+    }
+
 }
