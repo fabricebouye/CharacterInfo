@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -60,8 +61,11 @@ public final class CharacterInfoController implements Initializable {
         }
     }
 
+    private ResourceBundle resources;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
         final TextFormatter<String> applicationKeyTextFormatter = new ApplicationKeyTextFormatter();
         applicationKeyField.setTextFormatter(applicationKeyTextFormatter);
         applicationKeyField.textProperty().addListener(applicationKeyChangeListener);
@@ -88,22 +92,29 @@ public final class CharacterInfoController implements Initializable {
         if (applicationKeyValid) {
             settings.setProperty("app.key", newValue); // NOI18N.
             characterList.getItems().clear();
-            account = null;
-            guilds = null;
             start();
         } else {
             stop();
             settings.setProperty("app.key", null); // NOI18N.
+            accountCharacterLabel.setText(resources.getString("no.accout.label")); // NOI18N.
         }
     };
 
-    private transient Account account;
-    private transient List<Guild> guilds;
+    /**
+     * Le résultat de la requête.
+     * @author Fabrice Bouyé
+     */
+    private static class QueryResult {
+
+        Account account;
+        List<Guild> guilds;
+        List<Character> characters;
+    }
 
     /**
      * Le service de mise à jour automatique.
      */
-    private ScheduledService<List<Character>> updateService;
+    private ScheduledService<QueryResult> updateService;
     /**
      * Le temps d'attente entre chaque mise à jour automatique.
      */
@@ -114,23 +125,38 @@ public final class CharacterInfoController implements Initializable {
      */
     public void start() {
         if (updateService == null) {
-            updateService = new ScheduledService<List<Character>>() {
+            updateService = new ScheduledService<QueryResult>() {
 
                 @Override
-                protected Task<List<Character>> createTask() {
-                    return new Task<List<Character>>() {
+                protected Task<QueryResult> createTask() {
+                    return new Task<QueryResult>() {
 
                         @Override
-                        protected List<Character> call() throws Exception {
+                        protected QueryResult call() throws Exception {
+                            final QueryResult result = new QueryResult();
                             final String applicationKey = settings.getProperty("app.key"); // NOI18N.
-                            account = AccountQuery.accountInfo(applicationKey);
-                            guilds = new ArrayList(account.getGuilds().size());
-                            for (final String guildId : account.getGuilds()) {
+                            if (isCancelled()) {
+                                return null;
+                            }
+                            result.account = AccountQuery.accountInfo(applicationKey);
+                            if (isCancelled()) {
+                                return null;
+                            }
+                            final List<Guild> guilds = new ArrayList(result.account.getGuilds().size());
+                            for (final String guildId : result.account.getGuilds()) {
                                 final Guild guild = GuildDetailsQuery.guildInfo(guildId);
                                 guilds.add(guild);
+                                if (isCancelled()) {
+                                    return null;
+                                }
                             }
+                            result.guilds = Collections.unmodifiableList(guilds);
                             final List<String> names = CharactersQuery.listCharacters(applicationKey);
-                            return CharactersQuery.characterInfos(applicationKey, names.toArray(new String[0]));
+                            result.characters = CharactersQuery.characterInfos(applicationKey, names.toArray(new String[0]));
+                            if (isCancelled()) {
+                                return null;
+                            }
+                            return result;
                         }
                     };
                 }
@@ -138,10 +164,11 @@ public final class CharacterInfoController implements Initializable {
             updateService.setRestartOnFailure(true);
             updateService.setPeriod(updateWaitTime);
             updateService.setOnSucceeded(workerStateEvent -> {
-                accountCharacterLabel.setText(account.getName());
-                final List<Character> result = updateService.getValue();
-                characterList.getItems().setAll(result);
-                characterList.setCellFactory(listView -> new CharacterListCell(guilds));
+                final QueryResult result = updateService.getValue();
+                String label = resources.getString("account.characters.pattern"); // NOI18N.
+                accountCharacterLabel.setText(String.format(label, result.account.getName()));
+                characterList.getItems().setAll(result.characters);
+                characterList.setCellFactory(listView -> new CharacterListCell(result.guilds));
             });
             updateService.setOnFailed(workerStateEvent -> {
                 System.err.println(updateService.getException());
