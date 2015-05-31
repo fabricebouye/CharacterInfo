@@ -7,6 +7,10 @@
     -fx-spacing: 10px;
     -fx-font-family: serif;
 }
+.hbox,
+.vbox {
+    -fx-spacing: 10px;
+}
 .label,
 .text {
     -fx-font-size: 1.4em;        
@@ -33,6 +37,33 @@
 .language-button:selected {
     -fx-text-fill: black;
 }
-.cell {
-    -fx-font-size: 1.4em;        
+.character-info {
+    -fx-padding: 10px;
+    -fx-font-size: 1.4em;   
+    -fx-background-color: white;
+    -fx-background-image: url("corner-gray.png");
+    -fx-background-position: top left;
+    -fx-background-repeat: no-repeat;
+    -fx-alignment: CENTER;
 }
+.character-info .main-text{
+    -fx-font-size: 2.0em;
+}
+.character-info .guild-info {
+    -fx-opacity: 0.33;
+}
+.character-info .profession-race-info {
+    -fx-font-size: 1.0em;
+    -fx-opacity: 0.5;
+}
+.character-info .portrait-box {
+    -fx-background-color: black;
+}
+.list-cell,
+.list-cell:selected {
+    -fx-background-color: null;
+    -fx-padding: 0px;
+}
+.list-cell:selected .character-info {
+   -fx-background-image: url("corner-blue.png");
+ }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox id="AnchorPane" styleClass="hbox, character-info" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="test.scene.renderer.CharacterRendererController">
+    <children>
+        <StackPane maxHeight="-Infinity" styleClass="portrait-box" HBox.hgrow="NEVER">
+            <children> 
+                <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" />
+            </children> 
+        </StackPane>
+        <VBox styleClass="vbox" HBox.hgrow="ALWAYS" fillWidth="true" >
+            <children>
+                <TextFlow>
+                    <children>
+                        <Text id="nameLabel" fx:id="nameLabel" styleClass="main-text" text="Text" />
+                        <Text text=" " />
+                        <Text id="professionAndRaceLabel" fx:id="professionAndRaceLabel" styleClass="profession-race-info" text="Text" />
+                    </children>
+                </TextFlow>
+                <TextFlow>
+                    <children>
+                        <Text id="guildLabel" fx:id="guildLabel" styleClass="guild-info" text="Text" />
+                    </children>
+                </TextFlow>
+            </children>
+        </VBox>
+    </children>
+</HBox>

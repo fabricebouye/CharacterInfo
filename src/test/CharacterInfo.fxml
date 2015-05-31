@@ -20,6 +20,16 @@
                 <Text id="accountCharacterLabel" fx:id="accountCharacterLabel" text="%no.account.label" styleClass="main-text" />
             </children>    
         </TextFlow>
-        <ListView id="characterList" fx:id="characterList" orientation="HORIZONTAL"  VBox.vgrow="ALWAYS" />
+        <StackPane VBox.vgrow="ALWAYS" >
+            <children>
+                <VBox id="listingVBox" fx:id="listingVBox" styleClass="vbox">
+                    <children>
+                        <TextField id="searchField" fx:id="searchField" promptText="%search.label" />
+                        <ListView id="characterListView" fx:id="characterListView" VBox.vgrow="ALWAYS" />                
+                    </children>
+                </VBox>
+                <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" maxHeight="64.0" maxWidth="64.0" />
+            </children>
+        </StackPane>
     </children>
 </VBox>
