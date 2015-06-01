@@ -155,7 +155,7 @@ public final class CharacterInfoController implements Initializable {
     }
 
     /**
-     * Normalize la chaine de charactère en retirant les accents et diatribes.
+     * Normalize la chaine de charactère en retirant les accents et diacritiques.
      * @param source La chaîne source.
      * @return Une {@code String}, jamais {@code null}.
      */
