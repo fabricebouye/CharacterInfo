@@ -16,10 +16,10 @@ public enum AccountQuery {
     /**
      * L'URL de base de cet endpoint.
      */
-    private static final String basecode = "https://api.guildwars2.com/v2/account"; // NOI18N.
+    private static final String BASECODE = "https://api.guildwars2.com/v2/account"; // NOI18N.
 
     public static Account accountInfo(final String applicationKey) throws IOException {
-        final String url = String.format("%s?access_token=%s", basecode, applicationKey);
+        final String url = String.format("%s?access_token=%s", BASECODE, applicationKey);
         final JsonObject jsonObject = QueryUtils.queryObject(url);
         return AccountFactory.createAccount(jsonObject);
     }

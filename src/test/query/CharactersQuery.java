@@ -26,22 +26,22 @@ public enum CharactersQuery {
     /**
      * L'URL de base de cet endpoint.
      */
-    private static final String basecode = "https://api.guildwars2.com/v2/characters"; // NOI18N.
+    private static final String BASECODE = "https://api.guildwars2.com/v2/characters"; // NOI18N.
 
     public static List<String> listCharacters(final String applicationKey) throws IOException {
-        final String url = String.format("%s?access_token=%s", basecode, applicationKey);
+        final String url = String.format("%s?access_token=%s", BASECODE, applicationKey);
         final JsonArray jsonArray = QueryUtils.queryArray(url);
         return QueryUtils.jsonStringArrayToList(jsonArray, string -> string);
     }
 
     public static Character characterInfo(final String applicationKey, final String name) throws IOException, URISyntaxException {
-        final String url = String.format("%s/%s?access_token=%s", basecode, QueryUtils.encodeURLParameter(name), applicationKey);
+        final String url = String.format("%s/%s?access_token=%s", BASECODE, QueryUtils.encodeURLParameter(name), applicationKey);
         final JsonObject jsonObject = QueryUtils.queryObject(url);
         return CharacterFactory.createCharacter(jsonObject);
     }
 
     public static List<Character> characterInfos(final String applicationKey, final String... names) throws IOException {
-        final String url = String.format("%s?ids=%s&access_token=%s", basecode, QueryUtils.encodeURLParameter(QueryUtils.idsToString(names)), applicationKey);
+        final String url = String.format("%s?ids=%s&access_token=%s", BASECODE, QueryUtils.encodeURLParameter(QueryUtils.idsToString(names)), applicationKey);
         System.out.println(url);
         final JsonArray jsonArray = QueryUtils.queryArray(url);
         return QueryUtils.jsonObjectArrayToList(jsonArray, CharacterFactory::createCharacter);
