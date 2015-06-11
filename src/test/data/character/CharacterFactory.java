@@ -16,7 +16,7 @@ public enum CharacterFactory {
      * @return Une instance de {@code Character}, jamais {@code null}.
      */
     public static Character createCharacter(final JsonObject jsonObject) {
-        Character result = new Character();
+        final Character result = new Character();
         result.name = jsonObject.getString("name"); // NOI18N.
         // FB-2015-05-30 : on supposera que les phases beta lors de l'ajout d'une race pouraient aussi provoquer une NullPointerException.
         result.race = jsonObject.containsKey("race") ? Character.Race.find(jsonObject.getString("race")) : Character.Race.UNKNOWN; // NOI18N.
