@@ -39,7 +39,7 @@ public enum CharacterAndGuildUtils {
      * @return Une {@code String}, jamais {@code null}.
      */
     public static String guildTagLabel(final Guild guild) {
-        return String.format("[%s]", guild.getName(), guild.getTag()); // NOI18N.
+        return String.format("[%s]", guild.getTag()); // NOI18N.
     }
 
     /**
