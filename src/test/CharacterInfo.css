@@ -11,6 +11,10 @@
 .vbox {
     -fx-spacing: 10px;
 }
+.table-view {
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+}
 .label,
 .text {
     -fx-font-size: 1.4em;        
@@ -57,7 +61,8 @@
     -fx-opacity: 0.5;
 }
 .character-info .portrait-box {
-    -fx-background-color: black;
+    -fx-background-color: black, gray;
+    -fx-background-insets: 0px, 1px;
 }
 .list-cell,
 .list-cell:selected {

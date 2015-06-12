@@ -106,14 +106,6 @@ public enum QueryUtils {
      * @return Une instance non-modifiable de {@code List<T>}, jamais {@code null}.
      */
     public static <T> List<T> jsonStringArrayToList(final JsonArray array, final Function<String, T> converter) {
-//        final List<T> result = array.getValuesAs(JsonString.class)
-//                .stream()
-//                .map(jsonString -> {
-//                    final String string = jsonString.getString();
-//                    return converter.apply(string);
-//                })
-//                .collect(Collectors.toList());
-//        return Collections.unmodifiableList(result);
         return jsonArrayToList(array, JsonString.class, jsonString -> {
             final String string = jsonString.getString();
             return converter.apply(string);
@@ -128,11 +120,6 @@ public enum QueryUtils {
      * @return Une instance non-modifiable de {@code List<T>}, jamais {@code null}.
      */
     public static <T> List<T> jsonObjectArrayToList(final JsonArray array, final Function<JsonObject, T> converter) {
-//        final List<T> result = array.getValuesAs(JsonObject.class)
-//                .stream()
-//                .map(converter)
-//                .collect(Collectors.toList());
-//        return Collections.unmodifiableList(result);
         return jsonArrayToList(array, JsonObject.class, converter);
     }
 
@@ -144,11 +131,6 @@ public enum QueryUtils {
      * @return Une instance non-modifiable de {@code List<T>}, jamais {@code null}.
      */
     public static <T> List<T> jsonArrayArrayToList(final JsonArray array, final Function<JsonArray, T> converter) {
-//        final List<T> result = array.getValuesAs(JsonArray.class)
-//                .stream()
-//                .map(converter)
-//                .collect(Collectors.toList());
-//        return Collections.unmodifiableList(result);
         return jsonArrayToList(array, JsonArray.class, converter);
     }
 

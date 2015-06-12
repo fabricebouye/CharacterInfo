@@ -8,28 +8,32 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox id="AnchorPane" styleClass="hbox, character-info" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="test.scene.renderer.CharacterRendererController">
+<GridPane prefHeight="75.0" prefWidth="300.0" styleClass="table-view, character-info" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="test.scene.renderer.CharacterRendererController">
     <children>
-        <StackPane maxHeight="-Infinity" styleClass="portrait-box" HBox.hgrow="NEVER">
-            <children> 
-                <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" />
-            </children> 
-        </StackPane>
-        <VBox styleClass="vbox" HBox.hgrow="ALWAYS" fillWidth="true" >
+        <Group GridPane.halignment="CENTER" GridPane.rowSpan="2147483647" GridPane.valignment="TOP">
             <children>
-                <TextFlow>
-                    <children>
-                        <Text id="nameLabel" fx:id="nameLabel" styleClass="main-text" text="Text" />
-                        <Text text=" " />
-                        <Text id="professionAndRaceLabel" fx:id="professionAndRaceLabel" styleClass="profession-race-info" text="Text" />
-                    </children>
-                </TextFlow>
-                <TextFlow>
-                    <children>
-                        <Text id="guildLabel" fx:id="guildLabel" styleClass="guild-info" text="Text" />
-                    </children>
-                </TextFlow>
+                <StackPane maxHeight="-1" maxWidth="-1" styleClass="portrait-box">
+                    <children> 
+                        <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" />
+                    </children> 
+                </StackPane>
             </children>
-        </VBox>
+        </Group>
+        <Label id="nameLabel" fx:id="nameLabel" maxWidth="1.7976931348623157E308" styleClass="main-text" text="Text" GridPane.columnIndex="1" />
+        <TextFlow GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+            <children>
+                <Text id="professionAndRaceLabel" fx:id="professionAndRaceLabel" styleClass="profession-race-info" text="Text" />
+            </children>
+        </TextFlow>
+        <Text id="guildTagLabel" fx:id="guildTagLabel" styleClass="guild-info" text="Text" GridPane.columnIndex="2"/>
     </children>
-</HBox>
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="NEVER" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER" />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+</GridPane>

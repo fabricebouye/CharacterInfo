@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import test.data.character.Character;
 import test.data.guild.Guild;
@@ -15,15 +16,15 @@ import test.data.guild.Guild;
 public class CharacterRendererController implements Initializable {
 
     @FXML
-    private Text nameLabel;
+    private Label nameLabel;
     @FXML
     private Text professionAndRaceLabel;
     @FXML
-    private Text guildLabel;
+    private Text guildTagLabel;
 
     @Override
     public void initialize(final URL url, final ResourceBundle resouces) {
-        guildLabel.managedProperty().bind(guildLabel.visibleProperty());
+        guildTagLabel.managedProperty().bind(guildTagLabel.visibleProperty());
     }
 
     /**
@@ -36,8 +37,8 @@ public class CharacterRendererController implements Initializable {
         nameLabel.setText(nameText);
         final String professionAndRaceText = (character == null) ? null : CharacterAndGuildUtils.professionAndRaceLabel(character);
         professionAndRaceLabel.setText(professionAndRaceText);
-        final String guildText = (guild == null) ? null : CharacterAndGuildUtils.guildLabel(guild);
-        guildLabel.setText(guildText);
-        guildLabel.setVisible(guild != null);
+        final String guildText = (guild == null) ? null : CharacterAndGuildUtils.guildTagLabel(guild);
+        guildTagLabel.setText(guildText);
+        guildTagLabel.setVisible(guild != null);
     }
 }

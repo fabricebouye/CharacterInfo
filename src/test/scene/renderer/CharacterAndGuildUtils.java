@@ -38,6 +38,15 @@ public enum CharacterAndGuildUtils {
      * @param guild La guilde.
      * @return Une {@code String}, jamais {@code null}.
      */
+    public static String guildTagLabel(final Guild guild) {
+        return String.format("[%s]", guild.getName(), guild.getTag()); // NOI18N.
+    }
+
+    /**
+     * Renvoie le label pour afficher une guilde.
+     * @param guild La guilde.
+     * @return Une {@code String}, jamais {@code null}.
+     */
     public static String guildLabel(final Guild guild) {
         return String.format("%s [%s]", guild.getName(), guild.getTag()); // NOI18N.
     }
