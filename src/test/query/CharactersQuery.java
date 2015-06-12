@@ -9,6 +9,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import test.data.character.Character;
 import test.data.character.CharacterFactory;
+import test.text.ApplicationKeyUtils;
 
 /**
  * Permet de faire des requêtes sur l'endpoint Characters.
@@ -34,8 +35,13 @@ public enum CharactersQuery {
      * @param applicationKey La clé d'application.
      * @return Une instance de {@code List<String>} non-modifiable, jamais {@code null}.
      * @throws IOException En cas d'erreur.
+     * @throws IllegalArgumentException Si la clé d'application est {@code null} ou n'est pas valide.
      */
-    public static List<String> listCharacters(final String applicationKey) throws IOException {
+    public static List<String> listCharacters(final String applicationKey) throws IOException, IllegalArgumentException {
+        final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
+        if (!applicationKeyValid) {
+            throw new IllegalArgumentException();
+        }
         final String url = String.format("%s?access_token=%s", BASECODE, applicationKey); // NOI18N.
         final JsonArray jsonArray = QueryUtils.queryArray(url);
         return QueryUtils.jsonStringArrayToList(jsonArray, Function.identity());
@@ -47,9 +53,13 @@ public enum CharactersQuery {
      * @param name Le nom du personnage.
      * @return Une instance de {@code Character}, jamais {@code null}.
      * @throws IOException En cas d'erreur.
-     * @throws URISyntaxException En cas d'erreur.
+     * @throws IllegalArgumentException Si la clé d'application est {@code null} ou n'est pas valide.
      */
-    public static Character characterInfo(final String applicationKey, final String name) throws IOException, URISyntaxException {
+    public static Character characterInfo(final String applicationKey, final String name) throws IOException, IllegalArgumentException {
+        final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
+        if (!applicationKeyValid) {
+            throw new IllegalArgumentException();
+        }
         final String url = String.format("%s/%s?access_token=%s", BASECODE, QueryUtils.encodeURLParameter(name), applicationKey); // NOI18N.
         final JsonObject jsonObject = QueryUtils.queryObject(url);
         return CharacterFactory.createCharacter(jsonObject);
@@ -61,8 +71,13 @@ public enum CharactersQuery {
      * @param names Les nom des personnages.
      * @return Une instance de {@code List<Character>} non-modifiable, jamais {@code null}.
      * @throws IOException En cas d'erreur.
+     * @throws IllegalArgumentException Si la clé d'application est {@code null} ou n'est pas valide.
      */
-    public static List<Character> characterInfos(final String applicationKey, final String... names) throws IOException {
+    public static List<Character> characterInfos(final String applicationKey, final String... names) throws IOException, IllegalArgumentException {
+        final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
+        if (!applicationKeyValid) {
+            throw new IllegalArgumentException();
+        }
         final String url = String.format("%s?ids=%s&access_token=%s", BASECODE, QueryUtils.encodeURLParameter(QueryUtils.idsToString(names)), applicationKey); // NOI18N.
         System.out.println(url);
         final JsonArray jsonArray = QueryUtils.queryArray(url);
