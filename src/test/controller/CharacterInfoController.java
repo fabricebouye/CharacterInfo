@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
@@ -158,7 +159,10 @@ public final class CharacterInfoController implements Initializable {
      */
     private final InvalidationListener searchInvalidationListener = observable -> {
         final String searchText = searchField.getText();
-        final String[] criteria = (searchText == null || searchText.trim().isEmpty()) ? null : searchText.trim().split("[\\s,;]+"); // NOI18N.
+        final String[] criteria = (searchText == null || searchText.trim().isEmpty()) ? null : Arrays.stream(searchText.trim().split("[\\s,;]+")) // NOI18N.
+                .map(this::normalizeForSearch)
+                .collect(Collectors.toList())
+                .toArray(new String[0]);
         final Predicate<Character> filter = (criteria == null) ? allCharactersFilter : character -> filterCharacter(character, criteria);
         filteredCharacterList.setPredicate(filter);
     };
@@ -170,35 +174,46 @@ public final class CharacterInfoController implements Initializable {
      * @return {@code True} si le test réussit, {@code false} sinon.
      */
     private boolean filterCharacter(final Character character, final String... criteria) {
-        boolean result = true;
-        final String name = character.getName();
+        final String name = normalizeForSearch(character.getName());
         final Character.Gender gender = character.getGender();
-        final Character.Profession profession = character.getProfession();
+        final String baseGender = normalizeForSearch(gender.name());
+        final String i18nGender = normalizeForSearch(LabelUtils.genderLabel(resources, gender));
         final Character.Race race = character.getRace();
+        final String baseRace = normalizeForSearch(race.name());
+        final String i18nRace = normalizeForSearch(LabelUtils.raceLabel(resources, gender, race));
+        final Character.Profession profession = character.getProfession();
+        final String baseProfession = normalizeForSearch(profession.name());
+        final String i18nProfession = normalizeForSearch(LabelUtils.professionLabel(resources, gender, profession));
         final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
-        final String guildName = (guild == null) ? null : guild.getName();
-        final String guildTag = (guild == null) ? null : guild.getTag();
+        final String guildName = (guild == null) ? null : normalizeForSearch(guild.getName());
+        final String guildTag = (guild == null) ? null : normalizeForSearch(guild.getTag());
+        //
+        boolean result = true;
         for (final String criterion : criteria) {
-            final String toMatch = normalizeForSearch(criterion);
             boolean criterionTest = false;
             // Teste le nom du personnage.       
-            final boolean characterFound = normalizeForSearch(name).contains(toMatch);
+            final boolean characterFound = name.contains(criterion);
             criterionTest |= characterFound;
+            // Teste le sexe du personnage.       
+            final boolean baseGenderFound = baseGender.contains(criterion);
+            criterionTest |= baseGenderFound;
+            final boolean i18nGenderFound = i18nGender.contains(criterion);
+            criterionTest |= i18nGenderFound;
             // Teste la race du personnage.       
-            final boolean raceFound = normalizeForSearch(race.name()).contains(toMatch);
-            criterionTest |= raceFound;
-            final boolean raceI18NFound = normalizeForSearch(LabelUtils.raceLabel(resources, gender, race)).contains(toMatch);
-            criterionTest |= raceI18NFound;
+            final boolean baseRaceFound = baseRace.contains(criterion);
+            criterionTest |= baseRaceFound;
+            final boolean i18nRaceFound = i18nRace.contains(criterion);
+            criterionTest |= i18nRaceFound;
             // Teste la profession du personnage.       
-            final boolean professionFound = normalizeForSearch(profession.name()).contains(toMatch);
-            criterionTest |= professionFound;
-            final boolean professionI18NFound = normalizeForSearch(LabelUtils.professionLabel(resources, gender, profession)).contains(toMatch);
-            criterionTest |= professionI18NFound;
+            final boolean baseProfessionFound = baseProfession.contains(criterion);
+            criterionTest |= baseProfessionFound;
+            final boolean i18nProfessionFound = i18nProfession.contains(criterion);
+            criterionTest |= i18nProfessionFound;
             // Teste le nom de la guilde.
-            final boolean guildNameFound = (guildName == null) ? false : normalizeForSearch(guildName).contains(toMatch);
+            final boolean guildNameFound = (guildName == null) ? false : guildName.contains(criterion);
             criterionTest |= guildNameFound;
             // Test le tag de la guilde.
-            final boolean guildTagFound = (guildTag == null) ? false : normalizeForSearch(guildTag).contains(toMatch);
+            final boolean guildTagFound = (guildTag == null) ? false : guildTag.contains(criterion);
             criterionTest |= guildTagFound;
             //
             result &= criterionTest;

@@ -10,6 +10,11 @@ public enum LabelUtils {
 
     INSTANCE;
 
+    public static String genderLabel(final ResourceBundle resources, final Character.Gender gender) {
+        final String key = String.format("ui.gender.%s.label", gender.name().toLowerCase());
+        return resources.getString(key);
+    }
+
     public static String labelKeyForGender(final String prefix, final Character.Gender gender, final Enum value) {
         final Character.Gender g = (gender == Character.Gender.UNKNOWN) ? Character.Gender.FEMALE : gender;
         return String.format("%s.%s.%s.label", prefix, g.name().toLowerCase(), value.name().toLowerCase());
@@ -32,4 +37,3 @@ public enum LabelUtils {
         return String.format(pattern, raceStr, professionStr);
     }
 }
-
