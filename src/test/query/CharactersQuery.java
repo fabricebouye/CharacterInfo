@@ -3,6 +3,7 @@ package test.query;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.function.Function;
 import javafx.util.Duration;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -31,7 +32,7 @@ public enum CharactersQuery {
     public static List<String> listCharacters(final String applicationKey) throws IOException {
         final String url = String.format("%s?access_token=%s", BASECODE, applicationKey); // NOI18N.
         final JsonArray jsonArray = QueryUtils.queryArray(url);
-        return QueryUtils.jsonStringArrayToList(jsonArray, string -> string);
+        return QueryUtils.jsonStringArrayToList(jsonArray, Function.identity());
     }
 
     public static Character characterInfo(final String applicationKey, final String name) throws IOException, URISyntaxException {

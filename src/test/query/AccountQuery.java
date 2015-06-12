@@ -19,7 +19,7 @@ public enum AccountQuery {
     private static final String BASECODE = "https://api.guildwars2.com/v2/account"; // NOI18N.
 
     public static Account accountInfo(final String applicationKey) throws IOException {
-        final String url = String.format("%s?access_token=%s", BASECODE, applicationKey);
+        final String url = String.format("%s?access_token=%s", BASECODE, applicationKey); // NOI18N.
         final JsonObject jsonObject = QueryUtils.queryObject(url);
         return AccountFactory.createAccount(jsonObject);
     }

@@ -19,7 +19,7 @@ public enum GuildDetailsQuery {
     private static final String BASECODE = "https://api.guildwars2.com/v1/guild_details.json"; // NOI18N.
 
     public static Guild guildInfo(final String id) throws IOException {
-        final String url = String.format("%s?guild_id=%s", BASECODE, id);
+        final String url = String.format("%s?guild_id=%s", BASECODE, id); // NOI18N.
         final JsonObject jsonObject = QueryUtils.queryObject(url);
         return GuildFactory.createGuild(jsonObject);
     }
