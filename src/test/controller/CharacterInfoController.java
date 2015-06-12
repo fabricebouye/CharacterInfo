@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -168,19 +169,28 @@ public final class CharacterInfoController implements Initializable {
      * @return {@code True} si le test réussit, {@code false} sinon.
      */
     private boolean filterCharacter(final Character character, final String... criteria) {
-        boolean result = false;
+        boolean result = true;
         for (final String criterion : criteria) {
             final String toMatch = normalizeForSearch(criterion);
+            boolean criterionTest = false;
             // Teste le nom du personnage.       
             final boolean characterFound = normalizeForSearch(character.getName()).contains(toMatch);
-            result |= characterFound;
+            criterionTest |= characterFound;
+            // Teste la race du personnage.       
+            final boolean raceFound = normalizeForSearch(character.getRace().name()).contains(toMatch);
+            criterionTest |= raceFound;
+            // Teste la profession du personnage.       
+            final boolean professionFound = normalizeForSearch(character.getProfession().name()).contains(toMatch);
+            criterionTest |= professionFound;
             // Teste le nom de la guilde.
             final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
             final boolean guildNameFound = (guild == null) ? false : normalizeForSearch(guild.getName()).contains(toMatch);
-            result |= guildNameFound;
+            criterionTest |= guildNameFound;
             // Test le tag de la guilde.
             final boolean guildTagFound = (guild == null) ? false : normalizeForSearch(guild.getTag()).contains(toMatch);
-            result |= guildTagFound;
+            criterionTest |= guildTagFound;
+            //
+            result &= criterionTest;
         }
         return result;
     }
