@@ -18,6 +18,12 @@ public enum AccountQuery {
      */
     private static final String BASECODE = "https://api.guildwars2.com/v2/account"; // NOI18N.
 
+    /**
+     * Récupère les infos d'un compte.
+     * @param applicationKey La clé d'application.
+     * @return Une instance de {@code Account}, jamais {@code null}.
+     * @throws IOException En cas d'erreur.
+     */
     public static Account accountInfo(final String applicationKey) throws IOException {
         final String url = String.format("%s?access_token=%s", BASECODE, applicationKey); // NOI18N.
         final JsonObject jsonObject = QueryUtils.queryObject(url);
