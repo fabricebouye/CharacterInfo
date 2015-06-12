@@ -25,22 +25,6 @@
 .text-field:error {
     -fx-base: tomato;
 }
-.region-box,
-.language-box {
-    -fx-spacing: 10px;
-    -fx-alignment: CENTER;
-}
-.region-button,
-.language-button {
-    -fx-padding: 0px;
-    -fx-background-color: null;
-    -fx-content-display: text-only;
-    -fx-text-fill: gray;
-}
-.region-button:selected, 
-.language-button:selected {
-    -fx-text-fill: black;
-}
 .character-info {
     -fx-padding: 10px;
     -fx-font-size: 1.4em;   
