@@ -10,13 +10,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
@@ -24,19 +20,20 @@ import javafx.stage.Stage;
  * @author Fabrice Bouyé
  */
 public class CharacterInfo extends Application {
-    
+
+    public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("test.CharacterInfo"); // NOI18N.
+
     @Override
     public void start(Stage primaryStage) throws IOException {
-         // chargement de l'interface graphique.
-        final ResourceBundle bundle = ResourceBundle.getBundle("test.CharacterInfo"); // NOI18N.
+        // chargement de l'interface graphique.
         final URL fxmlURL = getClass().getResource("CharacterInfo.fxml"); // NOI18N.
-        final FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL, bundle);
+        final FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL, BUNDLE);
         final Parent root = fxmlLoader.load();
         // Préparation de la scène.
         final Scene scene = new Scene(root);
         final URL cssURL = getClass().getResource("CharacterInfo.css"); // NOI18N.
         scene.getStylesheets().add(cssURL.toExternalForm());
-        primaryStage.setTitle(bundle.getString("app.title")); // NOI18N.
+        primaryStage.setTitle(BUNDLE.getString("app.title")); // NOI18N.
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -46,5 +43,5 @@ public class CharacterInfo extends Application {
      */
     public static void main(String[] args) {
         launch(args);
-    }    
+    }
 }

@@ -1,7 +1,9 @@
 package test.scene.renderer;
 
+import test.scene.LabelUtils;
 import java.util.List;
 import java.util.Optional;
+import test.CharacterInfo;
 import test.data.character.Character;
 import test.data.guild.Guild;
 
@@ -17,9 +19,10 @@ public enum CharacterAndGuildUtils {
         final Character.Profession profession = character.getProfession();
         final Character.Race race = character.getRace();
         final Character.Gender gender = character.getGender();
-        return String.format("%s %s", race, profession);
+//        return String.format("%s %s", race, profession);
+        return LabelUtils.raceAndProfessionLabel(CharacterInfo.BUNDLE, gender, race, profession);
     }
-    
+
     /**
      * Renvoie la guilde d'un personnage.
      * @param character Le personnage.

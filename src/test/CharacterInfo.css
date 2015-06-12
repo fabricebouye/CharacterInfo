@@ -80,5 +80,5 @@
     -fx-padding: 0px;
 }
 .list-cell:selected .character-info {
-   -fx-background-image: url("corner-blue.png");
- }
+    -fx-background-image: url("corner-blue.png");
+}

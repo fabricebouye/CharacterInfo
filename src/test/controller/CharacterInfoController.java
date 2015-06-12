@@ -44,6 +44,7 @@ import test.data.guild.Guild;
 import test.query.AccountQuery;
 import test.query.CharactersQuery;
 import test.query.GuildDetailsQuery;
+import test.scene.LabelUtils;
 import test.scene.renderer.CharacterListCell;
 import test.scene.renderer.CharacterAndGuildUtils;
 import test.text.ApplicationKeyTextFormatter;
@@ -69,8 +70,8 @@ public final class CharacterInfoController implements Initializable {
     private ProgressIndicator progressIndicator;
 
     /**
-    * Stocke les réglages utilisateur.
-    */
+     * Stocke les réglages utilisateur.
+     */
     private final Properties settings = new Properties();
 
     /**
@@ -170,24 +171,34 @@ public final class CharacterInfoController implements Initializable {
      */
     private boolean filterCharacter(final Character character, final String... criteria) {
         boolean result = true;
+        final String name = character.getName();
+        final Character.Gender gender = character.getGender();
+        final Character.Profession profession = character.getProfession();
+        final Character.Race race = character.getRace();
+        final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
+        final String guildName = (guild == null) ? null : guild.getName();
+        final String guildTag = (guild == null) ? null : guild.getTag();
         for (final String criterion : criteria) {
             final String toMatch = normalizeForSearch(criterion);
             boolean criterionTest = false;
             // Teste le nom du personnage.       
-            final boolean characterFound = normalizeForSearch(character.getName()).contains(toMatch);
+            final boolean characterFound = normalizeForSearch(name).contains(toMatch);
             criterionTest |= characterFound;
             // Teste la race du personnage.       
-            final boolean raceFound = normalizeForSearch(character.getRace().name()).contains(toMatch);
+            final boolean raceFound = normalizeForSearch(race.name()).contains(toMatch);
             criterionTest |= raceFound;
+            final boolean raceI18NFound = normalizeForSearch(LabelUtils.raceLabel(resources, gender, race)).contains(toMatch);
+            criterionTest |= raceI18NFound;
             // Teste la profession du personnage.       
-            final boolean professionFound = normalizeForSearch(character.getProfession().name()).contains(toMatch);
+            final boolean professionFound = normalizeForSearch(profession.name()).contains(toMatch);
             criterionTest |= professionFound;
+            final boolean professionI18NFound = normalizeForSearch(LabelUtils.professionLabel(resources, gender, profession)).contains(toMatch);
+            criterionTest |= professionI18NFound;
             // Teste le nom de la guilde.
-            final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
-            final boolean guildNameFound = (guild == null) ? false : normalizeForSearch(guild.getName()).contains(toMatch);
+            final boolean guildNameFound = (guildName == null) ? false : normalizeForSearch(guildName).contains(toMatch);
             criterionTest |= guildNameFound;
             // Test le tag de la guilde.
-            final boolean guildTagFound = (guild == null) ? false : normalizeForSearch(guild.getTag()).contains(toMatch);
+            final boolean guildTagFound = (guildTag == null) ? false : normalizeForSearch(guildTag).contains(toMatch);
             criterionTest |= guildTagFound;
             //
             result &= criterionTest;
