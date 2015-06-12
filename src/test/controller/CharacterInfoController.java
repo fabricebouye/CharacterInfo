@@ -67,6 +67,9 @@ public final class CharacterInfoController implements Initializable {
     @FXML
     private ProgressIndicator progressIndicator;
 
+    /**
+    * Stocke les réglages utilisateur.
+    */
     private final Properties settings = new Properties();
 
     /**
@@ -85,10 +88,10 @@ public final class CharacterInfoController implements Initializable {
     private FilteredList<Character> filteredCharacterList = new FilteredList<>(sortedCharacterList);
 
     /**
-    * Tri des personnages sur le nom.
-    */
+     * Tri des personnages sur le nom.
+     */
     private Comparator<Character> characterNameComparator = (c1, c2) -> c1.getName().compareTo(c2.getName());
-    
+
     /**
      * Affiche tous les personnages.
      */
@@ -129,7 +132,7 @@ public final class CharacterInfoController implements Initializable {
             applicationKeyField.setText(applicationKey);
             applicationKeyField.positionCaret(0);
             applicationKeyField.selectRange(0, 0);
-            Platform.runLater(() -> impl_applicationKeyChanged(applicationKey));
+            Platform.runLater(() -> applicationKeyChanged(applicationKey));
         });
         applicationKeyField.textProperty().addListener(applicationKeyChangeListener);
         //
@@ -145,9 +148,12 @@ public final class CharacterInfoController implements Initializable {
      * Invoqué si la valeur de la clé d'application change.
      */
     private final ChangeListener<String> applicationKeyChangeListener = (observable, oldValue, newValue) -> {
-        impl_applicationKeyChanged(newValue);
+        applicationKeyChanged(newValue);
     };
 
+    /**
+     * Invoqué si la valeur de la valeur de recherche change.
+     */
     private final InvalidationListener searchInvalidationListener = observable -> {
         final String searchText = searchField.getText();
         final String[] criteria = (searchText == null || searchText.trim().isEmpty()) ? null : searchText.trim().split("[\\s,;]+"); // NOI18N.
@@ -194,7 +200,7 @@ public final class CharacterInfoController implements Initializable {
      * Invoqué quand la clé d'application change.
      * @param applicationKey La nouvelle clé d'application.
      */
-    private void impl_applicationKeyChanged(final String applicationKey) {
+    private void applicationKeyChanged(final String applicationKey) {
         final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
         applicationKeyField.pseudoClassStateChanged(errorPseudoClass, !applicationKeyValid);
         if (applicationKeyValid) {
@@ -227,6 +233,9 @@ public final class CharacterInfoController implements Initializable {
      * Le temps d'attente entre chaque mise à jour automatique.
      */
     private Duration updateWaitTime = CharactersQuery.SERVER_RETENTION_DURATION;
+    /**
+     * Dernier resultat.
+     */
     private QueryResult currentQueryResult;
 
     /**
@@ -276,7 +285,7 @@ public final class CharacterInfoController implements Initializable {
             updateService.setRestartOnFailure(true);
             updateService.setPeriod(updateWaitTime);
             updateService.setOnSucceeded(workerStateEvent -> {
-                currentQueryResult = (QueryResult)workerStateEvent.getSource().getValue();
+                currentQueryResult = (QueryResult) workerStateEvent.getSource().getValue();
                 String label = resources.getString("account.characters.pattern"); // NOI18N.
                 accountCharacterLabel.setText(String.format(label, currentQueryResult.account.getName()));
                 final Optional<Character> oldSelectionOptional = Optional.ofNullable(characterListView.getSelectionModel().getSelectedItem());
@@ -306,7 +315,7 @@ public final class CharacterInfoController implements Initializable {
     }
 
     /**
-     * Stoppe le service de mise a jour automatique.
+     * Stoppe le service de mise à jour automatique.
      */
     public void stop() {
         if (updateService == null) {
