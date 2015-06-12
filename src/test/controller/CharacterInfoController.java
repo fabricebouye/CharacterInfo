@@ -8,6 +8,7 @@ import java.net.URL;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -67,9 +68,30 @@ public final class CharacterInfoController implements Initializable {
     private ProgressIndicator progressIndicator;
 
     private final Properties settings = new Properties();
+
+    /**
+     * liste des personnages.
+     */
     private ObservableList<Character> characterList = FXCollections.observableList(new LinkedList());
+
+    /**
+     * liste triée des personnages.
+     */
     private SortedList<Character> sortedCharacterList = new SortedList<>(characterList);
+
+    /**
+     * liste filtrée des personnages.
+     */
     private FilteredList<Character> filteredCharacterList = new FilteredList<>(sortedCharacterList);
+
+    /**
+    * Tri des personnages sur le nom.
+    */
+    private Comparator<Character> characterNameComparator = (c1, c2) -> c1.getName().compareTo(c2.getName());
+    
+    /**
+     * Affiche tous les personnages.
+     */
     private final Predicate<Character> allCharactersFilter = character -> true;
 
     /**
@@ -85,8 +107,8 @@ public final class CharacterInfoController implements Initializable {
                 Logger.getLogger(CharacterInfoController.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
-        //
-        sortedCharacterList.setComparator((c1, c2) -> c1.getName().compareTo(c2.getName()));
+        // 
+        sortedCharacterList.setComparator(characterNameComparator);
         filteredCharacterList.setPredicate(allCharactersFilter);
     }
 
@@ -127,30 +149,33 @@ public final class CharacterInfoController implements Initializable {
     };
 
     private final InvalidationListener searchInvalidationListener = observable -> {
-        final String criteria = searchField.getText();
-        final Predicate<Character> filter = (criteria == null || criteria.trim().isEmpty()) ? allCharactersFilter : character -> filterCharacter(character, criteria);
+        final String searchText = searchField.getText();
+        final String[] criteria = (searchText == null || searchText.trim().isEmpty()) ? null : searchText.trim().split("[\\s,;]+"); // NOI18N.
+        final Predicate<Character> filter = (criteria == null) ? allCharactersFilter : character -> filterCharacter(character, criteria);
         filteredCharacterList.setPredicate(filter);
     };
 
     /**
      * Filtre la liste des personnage.
      * @param character Le personnage à tester.
-     * @param criteria Le critère de recherche.
+     * @param criteria Les critères de recherche.
      * @return {@code True} si le test réussit, {@code false} sinon.
      */
-    private boolean filterCharacter(final Character character, final String criteria) {
-        final String toMatch = normalizeForSearch(criteria);
+    private boolean filterCharacter(final Character character, final String... criteria) {
         boolean result = false;
-        // Teste le nom du personnage.       
-        final boolean characterFound = normalizeForSearch(character.getName()).contains(toMatch);
-        result |= characterFound;
-        // Teste le nom de la guilde.
-        final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
-        final boolean guildNameFound = (guild == null) ? false : normalizeForSearch(guild.getName()).contains(toMatch);
-        result |= guildNameFound;
-        // Test le tag de la guilde.
-        final boolean guildTagFound = (guild == null) ? false : normalizeForSearch(guild.getTag()).contains(toMatch);
-        result |= guildTagFound;
+        for (final String criterion : criteria) {
+            final String toMatch = normalizeForSearch(criterion);
+            // Teste le nom du personnage.       
+            final boolean characterFound = normalizeForSearch(character.getName()).contains(toMatch);
+            result |= characterFound;
+            // Teste le nom de la guilde.
+            final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
+            final boolean guildNameFound = (guild == null) ? false : normalizeForSearch(guild.getName()).contains(toMatch);
+            result |= guildNameFound;
+            // Test le tag de la guilde.
+            final boolean guildTagFound = (guild == null) ? false : normalizeForSearch(guild.getTag()).contains(toMatch);
+            result |= guildTagFound;
+        }
         return result;
     }
 
@@ -222,10 +247,12 @@ public final class CharacterInfoController implements Initializable {
                             if (isCancelled()) {
                                 return null;
                             }
+                            // Information sur le compte.
                             result.account = AccountQuery.accountInfo(applicationKey);
                             if (isCancelled()) {
                                 return null;
                             }
+                            // Information sur chaque guilde.
                             final List<Guild> guilds = new ArrayList(result.account.getGuilds().size());
                             for (final String guildId : result.account.getGuilds()) {
                                 final Guild guild = GuildDetailsQuery.guildInfo(guildId);
@@ -235,6 +262,7 @@ public final class CharacterInfoController implements Initializable {
                                 }
                             }
                             result.guilds = Collections.unmodifiableList(guilds);
+                            // Information sur chaque personnage.
                             final List<String> names = CharactersQuery.listCharacters(applicationKey);
                             result.characters = CharactersQuery.characterInfos(applicationKey, names.toArray(new String[0]));
                             if (isCancelled()) {
@@ -248,7 +276,7 @@ public final class CharacterInfoController implements Initializable {
             updateService.setRestartOnFailure(true);
             updateService.setPeriod(updateWaitTime);
             updateService.setOnSucceeded(workerStateEvent -> {
-                currentQueryResult = updateService.getValue();
+                currentQueryResult = (QueryResult)workerStateEvent.getSource().getValue();
                 String label = resources.getString("account.characters.pattern"); // NOI18N.
                 accountCharacterLabel.setText(String.format(label, currentQueryResult.account.getName()));
                 final Optional<Character> oldSelectionOptional = Optional.ofNullable(characterListView.getSelectionModel().getSelectedItem());
@@ -265,11 +293,11 @@ public final class CharacterInfoController implements Initializable {
                     newSelectionOptional.ifPresent(newSelection -> characterListView.getSelectionModel().select(newSelection));
                 });
             });
-            updateService.setOnFailed(workerStateEvent -> {
-                System.err.println(updateService.getException());
-                updateService.getException().printStackTrace();
-            });
             updateService.setOnCancelled(workerStateEvent -> {
+            });
+            updateService.setOnFailed(workerStateEvent -> {
+                System.err.println(workerStateEvent.getSource().getException());
+                updateService.getException().printStackTrace();
             });
         }
         listingVBox.setVisible(false);
