@@ -15,9 +15,35 @@
     -fx-hgap: 10px;
     -fx-vgap: 10px;
 }
+.list-view,
+.list-view:focused {
+    -fx-background-color: null;
+}
+.list-view .scroll-bar, 
+.list-view .scroll-bar .track {
+    -fx-background-color: null;
+}
+.list-view .scroll-bar .increment-button,
+.list-view .scroll-bar .decrement-button {    
+    -fx-background-color: null;
+}
+.list-view .scroll-bar:vertical .increment-button,
+.list-view .scroll-bar:vertical .decrement-button {    
+    -fx-padding: 0em 0.5em 0em 0.5em;
+}
+.list-view .scroll-bar:horizontal .increment-button,
+.list-view .scroll-bar:horizontal .decrement-button {    
+    -fx-padding: 0.5em 0em 0.5em 0em;
+}
+.list-view .scroll-bar .increment-button .increment-arrow,
+.list-view .scroll-bar .decrement-button .decrement-arrow {
+    -fx-background-color: null;
+    -fx-padding: 0em;
+}
 .label,
 .text {
-    -fx-font-size: 1.4em;        
+    -fx-font-size: 1.4em;    
+    -fx-text-fill: black;
 }
 .main-text {
     -fx-font-size: 3.0em;        
