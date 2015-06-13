@@ -7,28 +7,58 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox id="rootPane" fx:id="rootPane" styleClass="root-pane" prefHeight="600.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="test.controller.CharacterInfoController">
+<VBox id="rootPane" fx:id="rootPane" fillWidth="true" prefHeight="600.0" prefWidth="600.0" styleClass="root-pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.40" fx:controller="test.controller.CharacterInfoController">
     <children>
-        <TextFlow  id="applicationKeyFlow" fx:id="applicationKeyFlow" VBox.vgrow="NEVER">
+        <TextFlow id="applicationKeyFlow" fx:id="applicationKeyFlow" VBox.vgrow="NEVER">
             <children>    
-                <Text id="applicationKeyLabel" fx:id="applicationKeyLabel" text="%application.key.label" styleClass="main-text" />
+                <Text id="applicationKeyLabel" fx:id="applicationKeyLabel" styleClass="main-text" text="%application.key.label" />
             </children>    
         </TextFlow>
-        <TextField id="applicationKeyField" fx:id="applicationKeyField" />
-        <TextFlow  id="accountCharacterFlow" fx:id="accountCharacterFlow" VBox.vgrow="NEVER">
-            <children>    
-                <Text id="accountCharacterLabel" fx:id="accountCharacterLabel" text="%no.account.label" styleClass="main-text" />
-            </children>    
-        </TextFlow>
-        <StackPane VBox.vgrow="ALWAYS" >
+        <TextField id="applicationKeyField" fx:id="applicationKeyField" styleClass="key-field" />
+        <FlowPane id="applicationKeyPermissionFlow" fx:id="applicationKeyPermissionFlow" styleClass="flow-pane" />
+        <StackPane VBox.vgrow="ALWAYS">
             <children>
                 <VBox id="listingVBox" fx:id="listingVBox" styleClass="vbox">
                     <children>
-                        <TextField id="searchField" fx:id="searchField" promptText="%search.label" />
+                        <TextFlow id="accountFlow" fx:id="accountFlow" VBox.vgrow="NEVER">
+                            <children>    
+                                <Text id="accountLabel" fx:id="accountLabel" styleClass="section-text" text="%account.label" />
+                            </children>    
+                        </TextFlow>
+                        <TextFlow id="guildsFlow" fx:id="guildsFlow" VBox.vgrow="NEVER">
+                            <children>    
+                                <Text id="guildsLabel" fx:id="guildsLabel" styleClass="section-text" text="%guilds.label" />
+                            </children>    
+                        </TextFlow>
+                        <TextFlow id="charactersFlow" fx:id="charactersFlow" VBox.vgrow="NEVER">
+                            <children>    
+                                <Text id="charactersLabel" fx:id="charactersLabel" styleClass="section-text" text="%characters.label" />
+                            </children>    
+                        </TextFlow>
+                        <HBox id="searchHBox" fx:id="searchHBox" styleClass="hbox"> 
+                            <children>
+                                <TextField id="searchField" fx:id="searchField" promptText="%search.label" HBox.hgrow="ALWAYS" />
+                                <MenuButton id="seachOptionsButton" fx:id="seachOptionsButton" HBox.hgrow="NEVER">
+                                    <items>
+                                        <CheckMenuItem id="nameCheckItem" fx:id="nameCheckItem" text="%search.citerion.name" />
+                                        <CheckMenuItem id="genderCheckItem" fx:id="genderCheckItem" text="%search.citerion.gender" />
+                                        <CheckMenuItem id="raceCheckItem" fx:id="raceCheckItem" text="%search.citerion.race" />
+                                        <CheckMenuItem id="professionCheckItem" fx:id="professionCheckItem" text="%search.citerion.profession" />
+                                        <CheckMenuItem id="guildCheckItem" fx:id="guildCheckItem" text="%search.citerion.guild" />
+                                        <CheckMenuItem id="guildTagCheckItem" fx:id="guildTagCheckItem" text="%search.citerion.guild_tag" />
+                                    </items>
+                                </MenuButton>
+                            </children>
+                        </HBox>
                         <ListView id="characterListView" fx:id="characterListView" VBox.vgrow="ALWAYS" />                
                     </children>
                 </VBox>
                 <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" maxHeight="64.0" maxWidth="64.0" />
+                <TextFlow id="messageFlow" fx:id="messageFlow" maxHeight="-Infinity" styleClass="message-flow" StackPane.alignment="CENTER">
+                    <children>    
+                        <Text id="messageLabel" fx:id="messageLabel" styleClass="message-text" text="%no.account.label" />
+                    </children>    
+                </TextFlow>
             </children>
         </StackPane>
     </children>

@@ -30,13 +30,17 @@ import javafx.collections.transformation.SortedList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -63,7 +67,9 @@ public final class CharacterInfoController implements Initializable {
     @FXML
     private TextField applicationKeyField;
     @FXML
-    private Text accountCharacterLabel;
+    private FlowPane applicationKeyPermissionFlow;
+    @FXML
+    private Text messageLabel;
     @FXML
     private VBox listingVBox;
     @FXML
@@ -72,6 +78,18 @@ public final class CharacterInfoController implements Initializable {
     private ListView<Character> characterListView;
     @FXML
     private ProgressIndicator progressIndicator;
+    @FXML
+    private CheckMenuItem nameCheckItem;
+    @FXML
+    private CheckMenuItem genderCheckItem;
+    @FXML
+    private CheckMenuItem raceCheckItem;
+    @FXML
+    private CheckMenuItem professionCheckItem;
+    @FXML
+    private CheckMenuItem guildCheckItem;
+    @FXML
+    private CheckMenuItem guildTagCheckItem;
 
     /**
      * Stocke les réglages utilisateur.
@@ -134,15 +152,26 @@ public final class CharacterInfoController implements Initializable {
         final TextFormatter<String> applicationKeyTextFormatter = new ApplicationKeyTextFormatter();
         applicationKeyField.setTextFormatter(applicationKeyTextFormatter);
         final Optional<String> applicationKeyOptional = Optional.ofNullable(settings.getProperty("app.key")); // NOI18N.
-        applicationKeyOptional.ifPresent(applicationKey -> {
-            applicationKeyField.setText(applicationKey);
-            applicationKeyField.positionCaret(0);
-            applicationKeyField.selectRange(0, 0);
-            Platform.runLater(() -> applicationKeyChanged(applicationKey));
-        });
         applicationKeyField.textProperty().addListener(applicationKeyChangeListener);
         //
+        nameCheckItem.setSelected(Boolean.parseBoolean(settings.getProperty("search.filter.name", "true"))); // NOI18N.
+        nameCheckItem.selectedProperty().addListener(searchInvalidationListener);
+        genderCheckItem.setSelected(Boolean.parseBoolean(settings.getProperty("search.filter.gender", "true"))); // NOI18N.
+        genderCheckItem.selectedProperty().addListener(searchInvalidationListener);
+        raceCheckItem.setSelected(Boolean.parseBoolean(settings.getProperty("search.filter.race", "true"))); // NOI18N.
+        raceCheckItem.selectedProperty().addListener(searchInvalidationListener);
+        professionCheckItem.setSelected(Boolean.parseBoolean(settings.getProperty("search.filter.profession", "true"))); // NOI18N.
+        professionCheckItem.selectedProperty().addListener(searchInvalidationListener);
+        guildCheckItem.setSelected(Boolean.parseBoolean(settings.getProperty("search.filter.guild", "true"))); // NOI18N.
+        guildCheckItem.selectedProperty().addListener(searchInvalidationListener);
+        guildTagCheckItem.setSelected(Boolean.parseBoolean(settings.getProperty("search.filter.guild_tag", "true"))); // NOI18N.
+        guildTagCheckItem.selectedProperty().addListener(searchInvalidationListener);
+        //
         searchField.textProperty().addListener(searchInvalidationListener);
+        //
+        applicationKeyOptional.ifPresent(applicationKey -> {
+            applicationKeyField.setText(applicationKey);
+        });
     }
 
     /**
@@ -177,47 +206,72 @@ public final class CharacterInfoController implements Initializable {
      * @return {@code True} si le test réussit, {@code false} sinon.
      */
     private boolean filterCharacter(final Character character, final String... criteria) {
-        final String name = normalizeForSearch(character.getName());
+        final boolean filterName = nameCheckItem.isSelected();
+        final boolean filterGender = genderCheckItem.isSelected();
+        final boolean filterRace = raceCheckItem.isSelected();
+        final boolean filterProfession = professionCheckItem.isSelected();
+        final boolean filterGuild = guildCheckItem.isSelected();
+        final boolean filterGuildTag = guildTagCheckItem.isSelected();
+        final String name = filterName ? normalizeForSearch(character.getName()) : null;
+        // On a besoin du sexe pour le label de la profession et de la race.
         final Character.Gender gender = character.getGender();
-        final String baseGender = normalizeForSearch(gender.name());
-        final String i18nGender = normalizeForSearch(LabelUtils.genderLabel(resources, gender));
-        final Character.Race race = character.getRace();
-        final String baseRace = normalizeForSearch(race.name());
-        final String i18nRace = normalizeForSearch(LabelUtils.raceLabel(resources, gender, race));
-        final Character.Profession profession = character.getProfession();
-        final String baseProfession = normalizeForSearch(profession.name());
-        final String i18nProfession = normalizeForSearch(LabelUtils.professionLabel(resources, gender, profession));
-        final Guild guild = CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds);
+        final String baseGender = filterGender ? normalizeForSearch(gender.name()) : null;
+        final String i18nGender = filterGender ? normalizeForSearch(LabelUtils.genderLabel(resources, gender)) : null;
+        final Character.Race race = filterRace ? character.getRace() : null;
+        final String baseRace = (race == null) ? null : normalizeForSearch(race.name());
+        final String i18nRace = (race == null) ? null : normalizeForSearch(LabelUtils.raceLabel(resources, gender, race));
+        final Character.Profession profession = filterProfession ? character.getProfession() : null;
+        final String baseProfession = (profession == null) ? null : normalizeForSearch(profession.name());
+        final String i18nProfession = (profession == null) ? null : normalizeForSearch(LabelUtils.professionLabel(resources, gender, profession));
+        final Guild guild = (filterGuild || filterGuildTag) ? CharacterAndGuildUtils.guildForCharacter(character, currentQueryResult.guilds) : null;
         final String guildName = (guild == null) ? null : normalizeForSearch(guild.getName());
         final String guildTag = (guild == null) ? null : normalizeForSearch(guild.getTag());
         //
         boolean result = true;
         for (final String criterion : criteria) {
             boolean criterionTest = false;
-            // Teste le nom du personnage.       
-            final boolean characterFound = name.contains(criterion);
-            criterionTest |= characterFound;
+            // Teste le nom du personnage.  
+            if (name != null) {
+                final boolean characterFound = name.contains(criterion);
+                criterionTest |= characterFound;
+            }
             // Teste le sexe du personnage.       
-            final boolean baseGenderFound = baseGender.contains(criterion);
-            criterionTest |= baseGenderFound;
-            final boolean i18nGenderFound = i18nGender.contains(criterion);
-            criterionTest |= i18nGenderFound;
-            // Teste la race du personnage.       
-            final boolean baseRaceFound = baseRace.contains(criterion);
-            criterionTest |= baseRaceFound;
-            final boolean i18nRaceFound = i18nRace.contains(criterion);
-            criterionTest |= i18nRaceFound;
+            if (baseGender != null) {
+                final boolean baseGenderFound = baseGender.contains(criterion);
+                criterionTest |= baseGenderFound;
+            }
+            if (i18nGender != null) {
+                final boolean i18nGenderFound = i18nGender.contains(criterion);
+                criterionTest |= i18nGenderFound;
+            }
+            // Teste la race du personnage. 
+            if (baseRace != null) {
+                final boolean baseRaceFound = baseRace.contains(criterion);
+                criterionTest |= baseRaceFound;
+            }
+            if (i18nRace != null) {
+                final boolean i18nRaceFound = i18nRace.contains(criterion);
+                criterionTest |= i18nRaceFound;
+            }
             // Teste la profession du personnage.       
-            final boolean baseProfessionFound = baseProfession.contains(criterion);
-            criterionTest |= baseProfessionFound;
-            final boolean i18nProfessionFound = i18nProfession.contains(criterion);
-            criterionTest |= i18nProfessionFound;
+            if (baseProfession != null) {
+                final boolean baseProfessionFound = baseProfession.contains(criterion);
+                criterionTest |= baseProfessionFound;
+            }
+            if (i18nProfession != null) {
+                final boolean i18nProfessionFound = i18nProfession.contains(criterion);
+                criterionTest |= i18nProfessionFound;
+            }
             // Teste le nom de la guilde.
-            final boolean guildNameFound = (guildName == null) ? false : guildName.contains(criterion);
-            criterionTest |= guildNameFound;
+            if (guildName != null) {
+                final boolean guildNameFound = guildName.contains(criterion);
+                criterionTest |= guildNameFound;
+            }
             // Test le tag de la guilde.
-            final boolean guildTagFound = (guildTag == null) ? false : guildTag.contains(criterion);
-            criterionTest |= guildTagFound;
+            if (guildTag != null) {
+                final boolean guildTagFound = guildTag.contains(criterion);
+                criterionTest |= guildTagFound;
+            }
             //
             result &= criterionTest;
         }
@@ -242,20 +296,33 @@ public final class CharacterInfoController implements Initializable {
     private void applicationKeyChanged(final String applicationKey) {
         final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
         applicationKeyField.pseudoClassStateChanged(errorPseudoClass, !applicationKeyValid);
-        stopCharactersUpdate();
+        stopUpdateService();
+        characterList.clear();
+        listingVBox.setVisible(false);
+        progressIndicator.setVisible(false);
+        applicationKeyPermissionFlow.getChildren().clear();
+        messageLabel.setText(null);
+        messageLabel.setVisible(false);
+        messageLabel.pseudoClassStateChanged(errorPseudoClass, false);
         if (applicationKeyValid) {
             settings.setProperty("app.key", applicationKey); // NOI18N.
-            characterList.clear();
-            applicationKeyCheckAndStartUpdate();
+            checkApplicationKeyAndStartUpdate();
         } else {
-            settings.setProperty("app.key", null); // NOI18N.
-            accountCharacterLabel.setText(resources.getString("no.accout.label")); // NOI18N.
+            settings.setProperty("app.key", ""); // NOI18N.
+            messageLabel.setVisible(true);
+            messageLabel.setText(resources.getString("no.account.label")); // NOI18N.
         }
     }
 
+    /**
+     * Le service qui va vérifier la validité de la clé.
+     */
     private Service<TokenInfo> applicationKeyCheckService;
 
-    private void applicationKeyCheckAndStartUpdate() {
+    /**
+     * Vérifie les permission de la clé et si ok lance le service de mise à jour.
+     */
+    private void checkApplicationKeyAndStartUpdate() {
         if (applicationKeyCheckService == null) {
             applicationKeyCheckService = new Service<TokenInfo>() {
 
@@ -275,13 +342,30 @@ public final class CharacterInfoController implements Initializable {
             applicationKeyCheckService.setOnSucceeded(workerStateEvent -> {
                 final TokenInfo result = (TokenInfo) workerStateEvent.getSource().getValue();
                 final List<TokenInfo.Permission> permissions = result.getPermissions();
+                final List<Label> permissionsLabel = permissions.stream()
+                        .map(permission -> {
+                            final String text = LabelUtils.permissionLabel(resources, permission);
+                            final Label label = new Label(text);
+                            label.getStyleClass().add("permission-label");
+                            return label;
+                        })
+                        .collect(Collectors.toList());
+                applicationKeyPermissionFlow.getChildren().setAll(permissionsLabel);
                 if (permissions.contains(TokenInfo.Permission.ACCOUNT) && permissions.contains(TokenInfo.Permission.CHARACTERS)) {
-                    startCharactersUpdate();
+                    startUpdateService();
+                } else {
+                    messageLabel.setVisible(true);
+                    messageLabel.pseudoClassStateChanged(errorPseudoClass, true);
+                    messageLabel.setText(resources.getString("bad.permission.error"));
                 }
             });
             applicationKeyCheckService.setOnCancelled(workerStateEvent -> {
             });
             applicationKeyCheckService.setOnFailed(workerStateEvent -> {
+                messageLabel.setVisible(true);
+                messageLabel.pseudoClassStateChanged(errorPseudoClass, true);
+                messageLabel.setText(resources.getString("application_key.failed.error"));
+                workerStateEvent.getSource().getException().printStackTrace();
             });
         }
         applicationKeyCheckService.restart();
@@ -314,7 +398,7 @@ public final class CharacterInfoController implements Initializable {
     /**
      * Démarre le service de mise à jour automatique.
      */
-    public void startCharactersUpdate() {
+    private void startUpdateService() {
         if (updateService == null) {
             updateService = new ScheduledService<QueryResult>() {
 
@@ -359,8 +443,6 @@ public final class CharacterInfoController implements Initializable {
             updateService.setPeriod(updateWaitTime);
             updateService.setOnSucceeded(workerStateEvent -> {
                 currentQueryResult = (QueryResult) workerStateEvent.getSource().getValue();
-                String label = resources.getString("account.characters.pattern"); // NOI18N.
-                accountCharacterLabel.setText(String.format(label, currentQueryResult.account.getName()));
                 final Optional<Character> oldSelectionOptional = Optional.ofNullable(characterListView.getSelectionModel().getSelectedItem());
                 characterList.setAll(currentQueryResult.characters);
                 characterListView.setCellFactory(listView -> new CharacterListCell(currentQueryResult.guilds));
@@ -378,8 +460,10 @@ public final class CharacterInfoController implements Initializable {
             updateService.setOnCancelled(workerStateEvent -> {
             });
             updateService.setOnFailed(workerStateEvent -> {
-                System.err.println(workerStateEvent.getSource().getException());
-                updateService.getException().printStackTrace();
+                messageLabel.setVisible(true);
+                messageLabel.pseudoClassStateChanged(errorPseudoClass, true);
+                messageLabel.setText(resources.getString("application_key.failed.error"));
+                workerStateEvent.getSource().getException().printStackTrace();
             });
         }
         listingVBox.setVisible(false);
@@ -390,7 +474,7 @@ public final class CharacterInfoController implements Initializable {
     /**
      * Stoppe le service de mise à jour automatique.
      */
-    public void stopCharactersUpdate() {
+    private void stopUpdateService() {
         if (updateService == null) {
             return;
         }

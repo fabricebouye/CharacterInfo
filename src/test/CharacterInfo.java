@@ -35,6 +35,8 @@ public class CharacterInfo extends Application {
         scene.getStylesheets().add(cssURL.toExternalForm());
         primaryStage.setTitle(BUNDLE.getString("app.title")); // NOI18N.
         primaryStage.setScene(scene);
+        primaryStage.setWidth(800);
+        primaryStage.setHeight(700);
         primaryStage.show();
     }
 

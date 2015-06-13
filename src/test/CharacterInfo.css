@@ -11,6 +11,10 @@
 .vbox {
     -fx-spacing: 10px;
 }
+.flow-pane {
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+}
 .table-view {
     -fx-hgap: 10px;
     -fx-vgap: 10px;
@@ -48,8 +52,32 @@
 .main-text {
     -fx-font-size: 3.0em;        
 }
-.text-field:error {
-    -fx-base: tomato;
+.section-text {
+    -fx-font-size: 1.8em;        
+}
+.message-flow {
+    -fx-text-alignment: center;
+}
+.message-text {
+    -fx-font-size: 3.0em;          
+}
+.message-text:error {
+    -fx-fill: red;
+}
+.text-field {
+    -fx-base: rgb(238, 238, 238);
+    -fx-background-color: black, -fx-base;
+    -fx-background-insets: 0px, 1px;
+    -fx-background-radius: 0px;
+}
+.menu-button {
+    -fx-graphic: url("https://account.staticwars.com/img/gear.2ddee163.png");    
+    -fx-background-color: null;
+}
+.permission-label {
+    -fx-graphic: url("https://account.staticwars.com/img/gear.2ddee163.png");
+    -fx-font-family: "Arial";
+    -fx-font-size: 10px;
 }
 .character-info {
     -fx-padding: 10px;
@@ -59,6 +87,14 @@
     -fx-background-position: top left;
     -fx-background-repeat: no-repeat;
     -fx-alignment: CENTER;
+}
+.key-field {
+    -fx-padding: 10px 2px 10px 2px;
+    -fx-alignment: center;
+    -fx-font-family: "Monospace";
+}
+.key-field:error {
+    -fx-base: derive(tomato, 75%);
 }
 .character-info .main-text{
     -fx-font-size: 2.0em;
