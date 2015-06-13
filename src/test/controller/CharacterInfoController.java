@@ -28,6 +28,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -42,9 +43,11 @@ import javafx.util.Duration;
 import test.data.account.Account;
 import test.data.character.Character;
 import test.data.guild.Guild;
+import test.data.tokeninfo.TokenInfo;
 import test.query.AccountQuery;
 import test.query.CharactersQuery;
 import test.query.GuildDetailsQuery;
+import test.query.TokenInfoQuery;
 import test.scene.LabelUtils;
 import test.scene.renderer.CharacterListCell;
 import test.scene.renderer.CharacterAndGuildUtils;
@@ -239,15 +242,49 @@ public final class CharacterInfoController implements Initializable {
     private void applicationKeyChanged(final String applicationKey) {
         final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
         applicationKeyField.pseudoClassStateChanged(errorPseudoClass, !applicationKeyValid);
+        stopCharactersUpdate();
         if (applicationKeyValid) {
             settings.setProperty("app.key", applicationKey); // NOI18N.
             characterList.clear();
-            start();
+            applicationKeyCheckAndStartUpdate();
         } else {
-            stop();
             settings.setProperty("app.key", null); // NOI18N.
             accountCharacterLabel.setText(resources.getString("no.accout.label")); // NOI18N.
         }
+    }
+
+    private Service<TokenInfo> applicationKeyCheckService;
+
+    private void applicationKeyCheckAndStartUpdate() {
+        if (applicationKeyCheckService == null) {
+            applicationKeyCheckService = new Service<TokenInfo>() {
+
+                @Override
+                protected Task<TokenInfo> createTask() {
+                    return new Task<TokenInfo>() {
+
+                        @Override
+                        protected TokenInfo call() throws Exception {
+                            final String applicationKey = settings.getProperty("app.key"); // NOI18N.
+                            final TokenInfo result = TokenInfoQuery.tokenInfo(applicationKey);
+                            return result;
+                        }
+                    };
+                }
+            };
+            applicationKeyCheckService.setOnSucceeded(workerStateEvent -> {
+                final TokenInfo result = (TokenInfo) workerStateEvent.getSource().getValue();
+                final List<TokenInfo.Permission> permissions = result.getPermissions();
+                if (permissions.contains(TokenInfo.Permission.ACCOUNT) && permissions.contains(TokenInfo.Permission.CHARACTERS)) {
+                    startCharactersUpdate();
+                }
+            });
+            applicationKeyCheckService.setOnCancelled(workerStateEvent -> {
+            });
+            applicationKeyCheckService.setOnFailed(workerStateEvent -> {
+            });
+        }
+        applicationKeyCheckService.restart();
     }
 
     /**
@@ -277,7 +314,7 @@ public final class CharacterInfoController implements Initializable {
     /**
      * Démarre le service de mise à jour automatique.
      */
-    public void start() {
+    public void startCharactersUpdate() {
         if (updateService == null) {
             updateService = new ScheduledService<QueryResult>() {
 
@@ -353,7 +390,7 @@ public final class CharacterInfoController implements Initializable {
     /**
      * Stoppe le service de mise à jour automatique.
      */
-    public void stop() {
+    public void stopCharactersUpdate() {
         if (updateService == null) {
             return;
         }
