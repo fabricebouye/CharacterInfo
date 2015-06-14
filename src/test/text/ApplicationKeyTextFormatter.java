@@ -14,7 +14,8 @@ public final class ApplicationKeyTextFormatter extends TextFormatter<String> {
     public ApplicationKeyTextFormatter() {
         super(change -> {
             final String newText = change.getText();
-            if (newText != null && !change.getText().matches("[A-F0-9\\-]+")) { // NOI18N.
+            // X est nécessaire pour le mode démo.
+            if (newText != null && !change.getText().matches("[A-FX0-9\\-]+")) { // NOI18N.
                 change.setText("");
             }
             return change;

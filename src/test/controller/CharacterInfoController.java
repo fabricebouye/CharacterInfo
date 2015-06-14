@@ -47,6 +47,7 @@ import test.data.account.Account;
 import test.data.character.Character;
 import test.data.guild.Guild;
 import test.data.tokeninfo.TokenInfo;
+import test.demo.DemoSupport;
 import test.query.AccountQuery;
 import test.query.CharactersQuery;
 import test.query.GuildDetailsQuery;
@@ -295,7 +296,8 @@ public final class CharacterInfoController implements Initializable {
      * @param applicationKey La nouvelle clé d'application.
      */
     private void applicationKeyChanged(final String applicationKey) {
-        final boolean applicationKeyValid = ApplicationKeyUtils.validateApplicationKey(applicationKey);
+        final boolean isDemoMode = DemoSupport.isDemoApplicationKey(applicationKey);
+        final boolean applicationKeyValid = isDemoMode ? true : ApplicationKeyUtils.validateApplicationKey(applicationKey);
         applicationKeyField.pseudoClassStateChanged(errorPseudoClass, !applicationKeyValid);
         stopUpdateService();
         characterList.clear();
@@ -334,7 +336,8 @@ public final class CharacterInfoController implements Initializable {
                         @Override
                         protected TokenInfo call() throws Exception {
                             final String applicationKey = settings.getProperty("app.key"); // NOI18N.
-                            final TokenInfo result = TokenInfoQuery.tokenInfo(applicationKey);
+                            final boolean isDemoMode = DemoSupport.isDemoApplicationKey(applicationKey);
+                            final TokenInfo result = isDemoMode ? DemoSupport.tokenInfo() : TokenInfoQuery.tokenInfo(applicationKey);
                             return result;
                         }
                     };
@@ -411,18 +414,19 @@ public final class CharacterInfoController implements Initializable {
                         protected QueryResult call() throws Exception {
                             final QueryResult result = new QueryResult();
                             final String applicationKey = settings.getProperty("app.key"); // NOI18N.
+                            final boolean isDemoMode = DemoSupport.isDemoApplicationKey(applicationKey);
                             if (isCancelled()) {
                                 return null;
                             }
                             // Information sur le compte.
-                            result.account = AccountQuery.accountInfo(applicationKey);
+                            result.account = isDemoMode ? DemoSupport.accountInfo() : AccountQuery.accountInfo(applicationKey);
                             if (isCancelled()) {
                                 return null;
                             }
                             // Information sur chaque guilde.
                             final List<Guild> guilds = new ArrayList(result.account.getGuilds().size());
                             for (final String guildId : result.account.getGuilds()) {
-                                final Guild guild = GuildDetailsQuery.guildInfo(guildId);
+                                final Guild guild = isDemoMode ? DemoSupport.guildInfo() : GuildDetailsQuery.guildInfo(guildId);
                                 guilds.add(guild);
                                 if (isCancelled()) {
                                     return null;
@@ -430,8 +434,8 @@ public final class CharacterInfoController implements Initializable {
                             }
                             result.guilds = Collections.unmodifiableList(guilds);
                             // Information sur chaque personnage.
-                            final List<String> names = CharactersQuery.listCharacters(applicationKey);
-                            result.characters = CharactersQuery.characterInfos(applicationKey, names.toArray(new String[0]));
+                            final List<String> names = isDemoMode ? DemoSupport.listCharacters() : CharactersQuery.listCharacters(applicationKey);
+                            result.characters = isDemoMode ? DemoSupport.characterInfos() : CharactersQuery.characterInfos(applicationKey, names.toArray(new String[0]));
                             if (isCancelled()) {
                                 return null;
                             }
