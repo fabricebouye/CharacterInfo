@@ -71,6 +71,10 @@ public final class CharacterInfoController implements Initializable {
     @FXML
     private Text messageLabel;
     @FXML
+    private Text accountLabel;
+    @FXML
+    private Text accountKeyLabel;    
+    @FXML
     private TextFlow guildsFlow;
     @FXML
     private VBox listingVBox;
@@ -303,7 +307,9 @@ public final class CharacterInfoController implements Initializable {
         characterList.clear();
         listingVBox.setVisible(false);
         progressIndicator.setVisible(false);
-        applicationKeyPermissionFlow.getChildren().clear();
+        applicationKeyPermissionFlow.getChildren().clear();        
+        accountLabel.setText(null);
+        accountKeyLabel.setText(null);
         messageLabel.setText(null);
         messageLabel.setVisible(false);
         messageLabel.pseudoClassStateChanged(errorPseudoClass, false);
@@ -345,6 +351,7 @@ public final class CharacterInfoController implements Initializable {
             };
             applicationKeyCheckService.setOnSucceeded(workerStateEvent -> {
                 final TokenInfo result = (TokenInfo) workerStateEvent.getSource().getValue();
+                accountKeyLabel.setText(result.getName());                
                 final List<TokenInfo.Permission> permissions = result.getPermissions();
                 final List<Label> permissionsLabel = permissions.stream()
                         .map(permission -> {
@@ -448,6 +455,7 @@ public final class CharacterInfoController implements Initializable {
             updateService.setPeriod(updateWaitTime);
             updateService.setOnSucceeded(workerStateEvent -> {
                 currentQueryResult = (QueryResult) workerStateEvent.getSource().getValue();
+                accountLabel.setText(currentQueryResult.account.getName());
                 final Optional<Character> oldSelectionOptional = Optional.ofNullable(characterListView.getSelectionModel().getSelectedItem());
                 characterList.setAll(currentQueryResult.characters);
                 characterListView.setCellFactory(listView -> new CharacterListCell(currentQueryResult.guilds));

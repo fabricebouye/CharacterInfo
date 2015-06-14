@@ -20,17 +20,17 @@
             <children>
                 <VBox id="listingVBox" fx:id="listingVBox" styleClass="vbox">
                     <children>
-                        <TextFlow id="accountFlow" fx:id="accountFlow" VBox.vgrow="NEVER">
+                        <TextFlow id="accountFlow" fx:id="accountFlow" VBox.vgrow="NEVER" style="-fx-text-alignment: right;">
                             <children>    
-                                <Text id="accountLabel" fx:id="accountLabel" styleClass="section-text" text="%account.label" />
+                                <Text id="accountLabel" fx:id="accountLabel" styleClass="account-label" />
+                            </children>    
+                        </TextFlow>
+                        <TextFlow id="accountKeyFlow" fx:id="accountKeyFlow" VBox.vgrow="NEVER" style="-fx-text-alignment: right;">
+                            <children>    
+                                <Text id="accountKeyLabel" fx:id="accountKeyLabel" styleClass="token-label" />
                             </children>    
                         </TextFlow>
                         <TextFlow id="guildsFlow" fx:id="guildsFlow" VBox.vgrow="NEVER"/>
-                        <TextFlow id="charactersFlow" fx:id="charactersFlow" VBox.vgrow="NEVER">
-                            <children>    
-                                <Text id="charactersLabel" fx:id="charactersLabel" styleClass="section-text" text="%characters.label" />
-                            </children>    
-                        </TextFlow>
                         <HBox id="searchHBox" fx:id="searchHBox" styleClass="hbox"> 
                             <children>
                                 <TextField id="searchField" fx:id="searchField" promptText="%search.label" HBox.hgrow="ALWAYS" />

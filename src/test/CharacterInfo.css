@@ -52,9 +52,6 @@
 .main-text {
     -fx-font-size: 3.0em;        
 }
-.section-text {
-    -fx-font-size: 1.8em;        
-}
 .message-flow {
     -fx-text-alignment: center;
 }
@@ -118,9 +115,16 @@
 .list-cell:selected .character-info {
     -fx-background-image: url("corner-blue.png");
 }
+.account-label {
+    -fx-fill: rgb(180, 180, 180);
+    -fx-font-size: 1.8em;        
+}
+.token-label {
+    -fx-font-size: 1.0em;        
+}
 .guild-label {
-    -fx-fill: rgb(200, 200, 200);
-    -fx-font-size: 18px;
+    -fx-fill: rgb(180, 180, 180);
+    -fx-font-size: 1.5em;
 }
 .guild-separator-label {
     -fx-font-size: 18px;
