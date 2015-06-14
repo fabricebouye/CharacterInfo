@@ -25,11 +25,7 @@
                                 <Text id="accountLabel" fx:id="accountLabel" styleClass="section-text" text="%account.label" />
                             </children>    
                         </TextFlow>
-                        <TextFlow id="guildsFlow" fx:id="guildsFlow" VBox.vgrow="NEVER">
-                            <children>    
-                                <Text id="guildsLabel" fx:id="guildsLabel" styleClass="section-text" text="%guilds.label" />
-                            </children>    
-                        </TextFlow>
+                        <TextFlow id="guildsFlow" fx:id="guildsFlow" VBox.vgrow="NEVER"/>
                         <TextFlow id="charactersFlow" fx:id="charactersFlow" VBox.vgrow="NEVER">
                             <children>    
                                 <Text id="charactersLabel" fx:id="charactersLabel" styleClass="section-text" text="%characters.label" />

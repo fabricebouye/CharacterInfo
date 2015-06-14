@@ -118,3 +118,15 @@
 .list-cell:selected .character-info {
     -fx-background-image: url("corner-blue.png");
 }
+.guild-label {
+    -fx-fill: rgb(200, 200, 200);
+    -fx-font-size: 18px;
+}
+.guild-separator-label {
+    -fx-font-size: 18px;
+}
+.guild-count-label {
+    -fx-fill: black;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}

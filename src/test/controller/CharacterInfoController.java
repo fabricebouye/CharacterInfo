@@ -20,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -30,7 +29,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -43,6 +41,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import test.data.account.Account;
 import test.data.character.Character;
@@ -70,6 +69,8 @@ public final class CharacterInfoController implements Initializable {
     private FlowPane applicationKeyPermissionFlow;
     @FXML
     private Text messageLabel;
+    @FXML
+    private TextFlow guildsFlow;
     @FXML
     private VBox listingVBox;
     @FXML
@@ -448,6 +449,33 @@ public final class CharacterInfoController implements Initializable {
                 characterListView.setCellFactory(listView -> new CharacterListCell(currentQueryResult.guilds));
                 listingVBox.setVisible(true);
                 progressIndicator.setVisible(false);
+                //
+                guildsFlow.getChildren().clear();
+                currentQueryResult.guilds
+                        .stream()
+                        .forEach(guild -> {
+                            final long charactersInGuild = currentQueryResult.characters
+                            .stream()
+                            .filter(character -> guild.getId().equals(character.getGuild()))
+                            .count();
+                            final String guildText = CharacterAndGuildUtils.guildLabel(guild);
+                            final String countText = String.format("(%d)", charactersInGuild);
+                            final Text guildLabel = new Text(guildText);
+                            guildLabel.getStyleClass().add("guild-label");
+                            guildsFlow.getChildren().add(guildLabel);
+                            if (charactersInGuild > 0) {
+                                final Text spaceLabel = new Text(" ");
+                                final Text countLabel = new Text(countText);
+                                countLabel.getStyleClass().add("guild-count-label");
+                                guildsFlow.getChildren().addAll(spaceLabel, countLabel);
+                            }
+                            final Text separatorLabel = new Text(" • ");
+                            separatorLabel.getStyleClass().add("guild-separator-label");
+                            guildsFlow.getChildren().add(separatorLabel);
+                        });
+                if (!guildsFlow.getChildren().isEmpty()) {
+                    guildsFlow.getChildren().remove(guildsFlow.getChildren().size() - 1);
+                }
                 // Restore la sélection s'il y en a une.
                 oldSelectionOptional.ifPresent(oldSelection -> {
                     final Optional<Character> newSelectionOptional = characterListView.getItems()
