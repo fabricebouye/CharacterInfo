@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Rytlock Brimstone",
+        "race": "Charr",
+        "gender": "Male",
+        "profession": "Warrior",
+        "level": 80,
+        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    },
+    {
+        "name": "Logan Thackeray",
+        "race": "Human",
+        "gender": "Male",
+        "profession": "Guardian",
+        "level": 80,
+        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    },
+    {
+        "name": "Eir Stegalkin",
+        "race": "Norn",
+        "gender": "Female",
+        "profession": "Ranger",
+        "level": 80,
+        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    },
+    {
+        "name": "Zojja",
+        "race": "Asura",
+        "gender": "Female",
+        "profession": "Elementalist",
+        "level": 80,
+        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    },
+    {
+        "name": "Caithe",
+        "race": "Sylvari",
+        "gender": "Female",
+        "profession": "Thief",
+        "level": 80,
+        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    }
+]
