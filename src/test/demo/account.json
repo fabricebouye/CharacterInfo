@@ -2,7 +2,5 @@
    "id"     : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
    "name"   : "ExampleAccount.1234",
    "world"  : 1001,
-   "guilds" : [
-     "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-   ]
+   "guilds" : [ "01", "02", "03" ]
  }

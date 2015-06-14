@@ -5,7 +5,7 @@
         "gender": "Male",
         "profession": "Warrior",
         "level": 80,
-        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        "guild": "01"
     },
     {
         "name": "Logan Thackeray",
@@ -13,7 +13,7 @@
         "gender": "Male",
         "profession": "Guardian",
         "level": 80,
-        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        "guild": "01"
     },
     {
         "name": "Eir Stegalkin",
@@ -21,7 +21,7 @@
         "gender": "Female",
         "profession": "Ranger",
         "level": 80,
-        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        "guild": "01"
     },
     {
         "name": "Zojja",
@@ -29,7 +29,7 @@
         "gender": "Female",
         "profession": "Elementalist",
         "level": 80,
-        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        "guild": "01"
     },
     {
         "name": "Caithe",
@@ -37,6 +37,46 @@
         "gender": "Female",
         "profession": "Thief",
         "level": 80,
-        "guild": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        "guild": "01"
+    },
+    {
+        "name": "Marjory Delaqua",
+        "race": "Human",
+        "gender": "Female",
+        "profession": "Necromancer",
+        "level": 80,
+        "guild": "02"
+    },
+    {
+        "name": "Kasmeer Meade",
+        "race": "Human",
+        "gender": "Female",
+        "profession": "Mesmer",
+        "level": 80,
+        "guild": "02"
+    },
+    {
+        "name": "Rox Pickheart",
+        "race": "Charr",
+        "gender": "Female",
+        "profession": "Ranger",
+        "level": 80,
+        "guild": "03"
+    },
+    {
+        "name": "Braham Eirsson",
+        "race": "Norn",
+        "gender": "Male",
+        "profession": "Guardian",
+        "level": 80,
+        "guild": "03"
+    },
+    {
+        "name": "Taimi",
+        "race": "Asura",
+        "gender": "Female",
+        "profession": "Engineer",
+        "level": 80,
+        "guild": "03"
     }
 ]

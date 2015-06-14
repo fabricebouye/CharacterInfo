@@ -50,8 +50,9 @@ public enum DemoSupport {
         return AccountFactory.createAccount(jsonObject);
     }
 
-    public static Guild guildInfo() throws IOException {
-        final URL url = DemoSupport.class.getResource("guild.json"); // NOI18N.
+    public static Guild guildInfo(final String id) throws IOException {
+        final String filename = String.format("guild_%s.json", id);
+        final URL url = DemoSupport.class.getResource(filename); // NOI18N.
         final JsonObject jsonObject = QueryUtils.queryObject(url.toExternalForm());
         return GuildFactory.createGuild(jsonObject);
     }

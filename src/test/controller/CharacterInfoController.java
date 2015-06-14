@@ -433,7 +433,7 @@ public final class CharacterInfoController implements Initializable {
                             // Information sur chaque guilde.
                             final List<Guild> guilds = new ArrayList(result.account.getGuilds().size());
                             for (final String guildId : result.account.getGuilds()) {
-                                final Guild guild = isDemoMode ? DemoSupport.guildInfo() : GuildDetailsQuery.guildInfo(guildId);
+                                final Guild guild = isDemoMode ? DemoSupport.guildInfo(guildId) : GuildDetailsQuery.guildInfo(guildId);
                                 guilds.add(guild);
                                 if (isCancelled()) {
                                     return null;
