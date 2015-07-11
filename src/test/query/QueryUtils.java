@@ -150,4 +150,24 @@ public enum QueryUtils {
                 .collect(Collectors.toList());
         return Collections.unmodifiableList(result);
     }
+
+    /**
+     * Récupère une chaine sur une clé qui est potentiellement nulle ou absente.
+     * @param source L'objet JSON source.
+     * @param key La clé.
+     * @return Une instance de {@code String}, peut être {@code null} si la clé est absente ou contient la valeur {@code null}.
+     */
+    public static String fromNullOrMissingString(final JsonObject source, final String key) {
+        return (!source.containsKey(key) || source.isNull(key)) ? null : source.getString(key);
+    }
+
+    /**
+     * Récupère un objet sur une clé qui est potentiellement nulle ou absente.
+     * @param source L'objet JSON source.
+     * @param key La clé.
+     * @return Une instance de {@code JsonObject}, peut être {@code null} si la clé est absente ou contient la valeur {@code null}.
+     */
+    public static JsonObject fromNullOrMissingObject(final JsonObject source, final String key) {
+        return (!source.containsKey(key) || source.isNull(key)) ? null : source.getJsonObject(key);
+    }
 }
