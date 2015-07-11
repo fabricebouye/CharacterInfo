@@ -1,6 +1,8 @@
 package test.data.character;
 
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 /**
  * La fabrique à personnage.
@@ -25,7 +27,12 @@ public enum CharacterFactory {
         result.gender = Character.Gender.find(jsonObject.getString("gender")); // NOI18N.
         result.level = jsonObject.getInt("level"); // NOI18N.
         // FB-2015-05-30 : un personnage peut ne pas avoir de guilde active.
-        result.guild = jsonObject.containsKey("guild") ? jsonObject.getString("guild") : null; // NOI18N.
+//        result.guild = jsonObject.containsKey("guild") ? jsonObject.getString("guild") : null; // NOI18N.
+        // FB-2015-07-11 : le champs contient désormais null quand un personnage n'a pas de guilde.
+        if (jsonObject.containsKey("guild")) { // NOI18N.
+            final JsonValue value = jsonObject.get("guild"); // NOI18N.
+            result.guild = (value == JsonValue.NULL) ? null : ((JsonString) value).getString(); // NOI18N.
+        }
         return result;
     }
 }
