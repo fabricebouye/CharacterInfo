@@ -170,4 +170,14 @@ public enum QueryUtils {
     public static JsonObject fromNullOrMissingObject(final JsonObject source, final String key) {
         return (!source.containsKey(key) || source.isNull(key)) ? null : source.getJsonObject(key);
     }
+
+    /**
+     * Récupère un tableau sur une clé qui est potentiellement nulle ou absente.
+     * @param source L'objet JSON source.
+     * @param key La clé.
+     * @return Une instance de {@code JsonArray}, peut être {@code null} si la clé est absente ou contient la valeur {@code null}.
+     */
+    public static JsonArray fromNullOrMissingArray(final JsonObject source, final String key) {
+        return (!source.containsKey(key) || source.isNull(key)) ? null : source.getJsonArray(key);
+    }
 }
