@@ -144,7 +144,7 @@ public enum QueryUtils {
      * @return Une instance non-modifiable de {@code List<T>}, jamais {@code null}.
      */
     public static <S extends JsonValue, T> List<T> jsonArrayToList(final JsonArray array, final Class<S> sourceClass, final Function<S, T> converter) {
-        final List<T> result = array.getValuesAs(sourceClass)
+        final List<T> result = (array == null || array.isEmpty()) ? Collections.EMPTY_LIST : array.getValuesAs(sourceClass)
                 .stream()
                 .map(converter)
                 .collect(Collectors.toList());
@@ -179,5 +179,16 @@ public enum QueryUtils {
      */
     public static JsonArray fromNullOrMissingArray(final JsonObject source, final String key) {
         return (!source.containsKey(key) || source.isNull(key)) ? null : source.getJsonArray(key);
+    }
+
+    /**
+     * Récupère un entier sur une clé qui est potentiellement nulle ou absente.
+     * @param source L'objet JSON source.
+     * @param key La clé.
+     * @param defaultValue La valeur par defaut.
+     * @return Un {@code int}, peut être égal à {@code defaultValue} si la clé est absente ou contient la valeur {@code null}.
+     */
+    public static int fromNullOrMissingInt(final JsonObject source, final String key, final int defaultValue) {
+        return (!source.containsKey(key) || source.isNull(key)) ? defaultValue : source.getInt(key);
     }
 }
